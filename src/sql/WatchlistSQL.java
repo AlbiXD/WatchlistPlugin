@@ -103,7 +103,7 @@ public class WatchlistSQL {
 				String reason = result.getString("REASON");
 				;
 
-				banMSG = "&c&l" + player + " &7was added by &c&l" + staff + ": &7" + reason;
+				banMSG = "&a&l" + player + " &awas added by &a&l" + staff + ": &a" + reason;
 				playerList.add(banMSG);
 
 			}

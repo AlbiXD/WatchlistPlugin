@@ -1,0 +1,8 @@
+configVersion: null
+
+SQL:
+   host: ''
+   port: ''
+   database: ''
+   username: ''
+   password: ''

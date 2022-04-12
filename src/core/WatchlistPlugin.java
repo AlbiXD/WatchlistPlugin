@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import commands.WatchlistCommand;
+import data.DataManager;
 import listener.PlayerJoining;
 import sql.SQLSetup;
 import sql.WatchlistSQL;
@@ -22,11 +23,15 @@ public class WatchlistPlugin extends JavaPlugin {
 	public WatchlistSQL watchlist;
 
 	private ConsoleCommandSender console = Bukkit.getConsoleSender();
+	public DataManager data;
 
 	@Override
 	public void onEnable() {
 		// Initiating the plugin instance to this class
 		plugin = this;
+
+		this.data = new DataManager(this);
+		
 		// Enable Message
 		console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a&lPlugin is enabled!"));
 
@@ -41,24 +46,14 @@ public class WatchlistPlugin extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new PlayerJoining(), this);
 
 		//
-		List<Player> players = new ArrayList<Player>(Bukkit.getOnlinePlayers());
-
-		for (int i = 0; i < players.size(); i++) {
-			Player p = players.get(i);
-
-			if (p.hasPermission("watchlist") && !PlayerJoining.staffPlayers.contains(p)) {
-				PlayerJoining.staffPlayers.add(p);
-			}
-
-		}
-
 		// attempting to connect to the SQL database and creating the table
 		try {
 			SQL.connect();
 			watchlist.createTable();
 
 		} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
+			Bukkit.getConsoleSender().sendMessage(
+					ChatColor.translateAlternateColorCodes('&', "&4&lERROR: &4Unable to connect to database"));
 		}
 
 		// Checks if we connected to the SQL datasbase
