@@ -1,8 +1,8 @@
-configVersion: null
+configVersion: 0.1
 
 SQL:
-   host: ''
-   port: ''
-   database: ''
-   username: ''
+   host: 'localhost'
+   port: '3306'
+   database: 'watchlistplugin'
+   username: 'root'
    password: ''
