@@ -23,24 +23,26 @@ public class DataManager {
 
 	}
 
+	// reloads the config
 	public void reloadConfig() {
-		if (this.configFile == null) 
+		if (this.configFile == null)// if config file does not exist create it
 			this.configFile = new File(this.plugin.getDataFolder(), "config.yml");
 
-			this.dataConfig = YamlConfiguration.loadConfiguration(this.configFile);
+		this.dataConfig = YamlConfiguration.loadConfiguration(this.configFile);
 
-			InputStream defaultStream = this.plugin.getResource("config.yml");
-			if (defaultStream != null) {
-				YamlConfiguration defaultConfig = YamlConfiguration
-						.loadConfiguration(new InputStreamReader(defaultStream));
-				this.dataConfig.setDefaults(defaultConfig);
-			}
+		InputStream defaultStream = this.plugin.getResource("config.yml");
+		if (defaultStream != null) {
+			YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
+			this.dataConfig.setDefaults(defaultConfig);
 
 		}
+
+	}
 
 	public FileConfiguration getConfig() {
 		if (this.dataConfig == null) {
 			reloadConfig();
+
 		}
 		return this.dataConfig;
 

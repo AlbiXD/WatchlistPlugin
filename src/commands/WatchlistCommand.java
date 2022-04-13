@@ -131,6 +131,7 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 			plugin.watchlist.removeWatchlist(args[1]);
 			sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
 					"&aPlayer " + args[1] + " successfully removed from watchlist!"));
+			return true;
 
 		} // ending of the remove subcommand
 		/*

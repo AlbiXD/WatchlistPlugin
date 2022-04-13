@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import commands.WatchlistCommand;
+import data.ConfigEnums;
 import data.DataManager;
 import listener.PlayerJoining;
 import sql.SQLSetup;
@@ -31,7 +32,15 @@ public class WatchlistPlugin extends JavaPlugin {
 		plugin = this;
 
 		this.data = new DataManager(this);
+		for (ConfigEnums cfg : ConfigEnums.values()) {
+			if (!data.getConfig().contains(cfg.defaults)) {
+				System.out.println(cfg.defaults);
+				data.getConfig().set(cfg.defaults, cfg.value);
+			}
+			data.saveConfig();
+		}
 		
+
 		// Enable Message
 		console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a&lPlugin is enabled!"));
 

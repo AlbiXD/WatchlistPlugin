@@ -1,8 +1,0 @@
-configVersion: 0.1
-
-SQL:
-   host: 'localhost'
-   port: '3306'
-   database: 'watchlistplugin'
-   username: 'root'
-   password: ''
