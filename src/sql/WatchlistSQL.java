@@ -115,6 +115,36 @@ public class WatchlistSQL {
 		return playerList;
 	}
 
+	public void playerChangedName(Player p) {
+
+		try {
+			String UUID = "";
+			String playerName = "";
+
+			PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM watchlist");
+			ResultSet result = ps.executeQuery();
+
+			while (result.next()) {
+				if (result.getString("playerUUID").equals(p.getUniqueId().toString())) {
+					UUID = result.getString("playerUUID");
+					playerName = result.getString("playerNAME");
+				}
+			}
+
+			if (!playerName.equals(p.getName()) && UUID.equals(p.getUniqueId().toString())) {
+				ps = plugin.SQL.getConnection().prepareStatement("UPDATE watchlist SET playerNAME = ?");
+				ps.setString(1, p.getName());
+				ps.executeUpdate();
+
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	public List<String> playerList() {
 		List<String> playerList = new ArrayList<String>();
 		try {

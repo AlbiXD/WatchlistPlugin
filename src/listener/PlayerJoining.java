@@ -19,6 +19,8 @@ public class PlayerJoining implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
+		
+		plugin.watchlist.playerChangedName(e.getPlayer());
 
 		if (plugin.watchlist.exists(e.getPlayer().getUniqueId())) {
 			String watchlistedPlayer = e.getPlayer().getName();
