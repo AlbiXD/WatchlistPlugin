@@ -1,24 +1,22 @@
 package sql;
 
 import java.sql.Connection;
+
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
 import core.WatchlistPlugin;
-import data.DataManager;
 
-public class SQLSetup {	
+public class SQLSetup {
 	FileConfiguration cfg = WatchlistPlugin.plugin.data.getConfig();
-	
+
 	private String host = cfg.getString("SQL.host");
 	private String port = cfg.getString("SQL.port");
 	private String database = cfg.getString("SQL.database");
 	private String username = cfg.getString("SQL.username");
 	private String password = cfg.getString("SQL.password");
-	
-
 
 	private Connection connection;
 

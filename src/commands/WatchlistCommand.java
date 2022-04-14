@@ -11,21 +11,24 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.ChatPaginator;
 
 import core.WatchlistPlugin;
+import data.LanguageEnums;
 import listener.PlayerJoining;
 
 public class WatchlistCommand implements CommandExecutor, TabCompleter {
 	public static WatchlistPlugin plugin = WatchlistPlugin.getInstance();
 	private OfflinePlayer target;
+	FileConfiguration config = plugin.language.getConfig();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		// Checks if player has permission
 		if (!sender.hasPermission("watchlist")) {
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou have insufficient permissions"));
+			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("nopermMessage")));
 			return true;
 
 		}
@@ -34,7 +37,7 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 		// subcommands
 		if (args.length == 0) {
 			sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-					"&cIncorrect usage please type /watchlist help for more commands"));
+					config.getString(LanguageEnums.INCORRECTUSAGE.defaults)));
 
 			return true;
 		}
@@ -47,22 +50,23 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 		if (args[0].toLowerCase().equals("add")) {
 			if (!(sender instanceof Player)) {
 				// If arguments is 3 or greater than
-				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cOnly players can use this command"));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+						config.getString(LanguageEnums.ONLYPLAYERMESSAGE.defaults)));
 				return true;
 
 			}
 			// Checks if the arugment is less than 3
 			if (args.length < 3) {
-				sender.sendMessage(
-						ChatColor.translateAlternateColorCodes('&', "&cInvalid arguments specify player and reason!"));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+						config.getString(LanguageEnums.INVALIDARGUMENT.defaults)));
 				return true;
 			}
 
 			// Checks if the player exists in the server
 			if (Bukkit.getOfflinePlayer(args[1]) == null) {
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+						config.getString(LanguageEnums.PLAYERNOTFOUND.defaults).replace("%target%", args[1])));
 
-				sender.sendMessage(
-						ChatColor.translateAlternateColorCodes('&', "&cPlayer " + args[1] + " does not exist!"));
 				return true;
 			}
 			target = Bukkit.getOfflinePlayer(args[1]);
@@ -70,13 +74,13 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 			// Checks if player is in database
 			if (plugin.watchlist.exists(target.getUniqueId())) {
 				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-						"&cPlayer " + args[1] + " already is in watchlist!"));
+						config.getString(LanguageEnums.PLAYEREXISTS.defaults).replace("%target%", args[1])));
 				return true;
 
 			}
 
 			sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-					"&aPlayer " + args[1] + " has been added to the watchlist!"));
+					config.getString(LanguageEnums.PLAYERADDED.defaults).replace("%target%", args[1])));
 
 			// Converts reason into a single string
 			String reason = "";
@@ -90,8 +94,8 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 			// Announces to other staff that player has been added to database
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				if (p.hasPermission("watchlist") && !p.equals((Player) sender)) {
-					p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a&l" + target.getName()
-							+ " &ahas been added to the watchlisted by " + sender.getName() + "!"));
+					p.sendMessage(ChatColor.translateAlternateColorCodes('&',
+							config.getString(LanguageEnums.STAFFADDEDMESSAGE.defaults).replace("%target%", args[1]).replace("%staff%", sender.getName())));
 					p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2.0f, 1.0f);
 				}
 			}
@@ -106,14 +110,14 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 		 */
 		else if (args[0].toLowerCase().equals("remove")) {
 			if (args.length < 2) {
-				sender.sendMessage(
-						ChatColor.translateAlternateColorCodes('&', "&cInvalid arguments specify a player!"));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+						config.getString(config.getString(LanguageEnums.INVALIDARGUMENT.defaults))));
 				return true;
 			}
 			// Checks if player exists or not
 			if (Bukkit.getOfflinePlayer(args[1]) == null) {
 				sender.sendMessage(
-						ChatColor.translateAlternateColorCodes('&', "&cPlayer " + args[1] + " does not exist"));
+						ChatColor.translateAlternateColorCodes('&', config.getString(LanguageEnums.PLAYERNOTFOUND.defaults).replace("%target%", args[1])));
 				return true;
 			}
 
@@ -123,14 +127,13 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 			// checks if UUID is within the database
 			if (!plugin.watchlist.exists(target.getUniqueId())) {
 				sender.sendMessage(
-						ChatColor.translateAlternateColorCodes('&', "&cPlayer " + args[1] + " is not watchlisted"));
+						ChatColor.translateAlternateColorCodes('&', config.getString(LanguageEnums.PLAYERNOTINLIST.defaults).replace("%target%", args[1])));
 				return true;
 			}
 
 			// Successfully removed the player
 			plugin.watchlist.removeWatchlist(args[1]);
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-					"&aPlayer " + args[1] + " successfully removed from watchlist!"));
+			sender.sendMessage(ChatColor.translateAlternateColorCodes('&',config.getString(LanguageEnums.PLAYERREMOVED.defaults).replace("%target%", args[1])));
 			return true;
 
 		} // ending of the remove subcommand
@@ -159,7 +162,7 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 
 			// Checks if list is empty
 			if (totalPages < 0) {
-				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cThe Watch List is currently empty"));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString(LanguageEnums.WATCHLISTEMPTY.defaults)));
 				return true;
 			}
 
@@ -216,16 +219,22 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 
 			} catch (NumberFormatException e) {
 				sender.sendMessage(
-						ChatColor.translateAlternateColorCodes('&', "&c&l" + args[1] + "&c is an invalid integer!"));
+						ChatColor.translateAlternateColorCodes('&', config.getString(LanguageEnums.INVALIDINTEGER.defaults).replace("%integer%", args[1])));
 				return true;
 
 			}
 
 		} // ending of the list subcommand
+		else if (args[0].toLowerCase().equals("reload")) {
+			plugin.language.reloadConfig();
+			config = plugin.language.getConfig();
+			sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&aConfig has been reloaded"));
+			return true;
+
+		}
 
 		// Incase of wrong arguments
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-				"&cIncorrect usage please type /watchlist help for more commands"));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString(LanguageEnums.INCORRECTUSAGE.defaults)));
 
 		return true;
 

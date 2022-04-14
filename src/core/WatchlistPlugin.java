@@ -1,18 +1,14 @@
 package core;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import commands.WatchlistCommand;
 import data.ConfigEnums;
-import data.DataManager;
+import data.ConfigManager;
+import data.LanguageEnums;
 import listener.PlayerJoining;
 import sql.SQLSetup;
 import sql.WatchlistSQL;
@@ -24,22 +20,32 @@ public class WatchlistPlugin extends JavaPlugin {
 	public WatchlistSQL watchlist;
 
 	private ConsoleCommandSender console = Bukkit.getConsoleSender();
-	public DataManager data;
+	public ConfigManager data;
+	public ConfigManager language;
 
 	@Override
 	public void onEnable() {
 		// Initiating the plugin instance to this class
 		plugin = this;
 
-		this.data = new DataManager(this);
+		data = new ConfigManager(this, "config.yml");
+		language = new ConfigManager(this, "lang.yml");
+		
 		for (ConfigEnums cfg : ConfigEnums.values()) {
 			if (!data.getConfig().contains(cfg.defaults)) {
-				System.out.println(cfg.defaults);
 				data.getConfig().set(cfg.defaults, cfg.value);
 			}
 			data.saveConfig();
 		}
 		
+		
+		for (LanguageEnums lan : LanguageEnums.values()) {
+			if (!language.getConfig().contains(lan.defaults)) {
+				System.out.println(lan);
+				language.getConfig().set(lan.defaults, lan.value);
+			}
+			language.saveConfig();
+		}
 
 		// Enable Message
 		console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a&lPlugin is enabled!"));
