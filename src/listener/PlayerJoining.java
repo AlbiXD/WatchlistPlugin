@@ -19,6 +19,7 @@ public class PlayerJoining implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
+		e.getPlayer().setDisplayName("TEST");
 		
 		plugin.watchlist.playerChangedName(e.getPlayer());
 

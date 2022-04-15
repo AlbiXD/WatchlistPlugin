@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -18,6 +18,12 @@ import org.bukkit.util.ChatPaginator;
 import core.WatchlistPlugin;
 import data.LanguageEnums;
 import listener.PlayerJoining;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class WatchlistCommand implements CommandExecutor, TabCompleter {
 	public static WatchlistPlugin plugin = WatchlistPlugin.getInstance();
@@ -26,6 +32,7 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+
 		// Checks if player has permission
 		if (!sender.hasPermission("watchlist")) {
 			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("nopermMessage")));
@@ -95,7 +102,8 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				if (p.hasPermission("watchlist") && !p.equals((Player) sender)) {
 					p.sendMessage(ChatColor.translateAlternateColorCodes('&',
-							config.getString(LanguageEnums.STAFFADDEDMESSAGE.defaults).replace("%target%", args[1]).replace("%staff%", sender.getName())));
+							config.getString(LanguageEnums.STAFFADDEDMESSAGE.defaults).replace("%target%", args[1])
+									.replace("%staff%", sender.getName())));
 					p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2.0f, 1.0f);
 				}
 			}
@@ -116,8 +124,8 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 			}
 			// Checks if player exists or not
 			if (Bukkit.getOfflinePlayer(args[1]) == null) {
-				sender.sendMessage(
-						ChatColor.translateAlternateColorCodes('&', config.getString(LanguageEnums.PLAYERNOTFOUND.defaults).replace("%target%", args[1])));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+						config.getString(LanguageEnums.PLAYERNOTFOUND.defaults).replace("%target%", args[1])));
 				return true;
 			}
 
@@ -126,14 +134,15 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 
 			// checks if UUID is within the database
 			if (!plugin.watchlist.exists(target.getUniqueId())) {
-				sender.sendMessage(
-						ChatColor.translateAlternateColorCodes('&', config.getString(LanguageEnums.PLAYERNOTINLIST.defaults).replace("%target%", args[1])));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+						config.getString(LanguageEnums.PLAYERNOTINLIST.defaults).replace("%target%", args[1])));
 				return true;
 			}
 
 			// Successfully removed the player
 			plugin.watchlist.removeWatchlist(args[1]);
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&',config.getString(LanguageEnums.PLAYERREMOVED.defaults).replace("%target%", args[1])));
+			sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+					config.getString(LanguageEnums.PLAYERREMOVED.defaults).replace("%target%", args[1])));
 			return true;
 
 		} // ending of the remove subcommand
@@ -142,7 +151,7 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 		 * 
 		 * @commands: /db help
 		 */
-		else if (args[0].toLowerCase().equals("help")) {
+		else if (args[0].equalsIgnoreCase("help")) {
 			helpCommands(sender);
 			return true;
 
@@ -161,8 +170,9 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 			}
 
 			// Checks if list is empty
-			if (totalPages < 0) {
-				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString(LanguageEnums.WATCHLISTEMPTY.defaults)));
+			if (totalPages == 0) {
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+						config.getString(LanguageEnums.WATCHLISTEMPTY.defaults)));
 				return true;
 			}
 
@@ -218,8 +228,8 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 				return true;
 
 			} catch (NumberFormatException e) {
-				sender.sendMessage(
-						ChatColor.translateAlternateColorCodes('&', config.getString(LanguageEnums.INVALIDINTEGER.defaults).replace("%integer%", args[1])));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+						config.getString(LanguageEnums.INVALIDINTEGER.defaults).replace("%integer%", args[1])));
 				return true;
 
 			}
@@ -228,13 +238,14 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 		else if (args[0].toLowerCase().equals("reload")) {
 			plugin.language.reloadConfig();
 			config = plugin.language.getConfig();
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&',"&aConfig has been reloaded"));
+			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aConfig has been reloaded"));
 			return true;
 
 		}
 
 		// Incase of wrong arguments
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString(LanguageEnums.INCORRECTUSAGE.defaults)));
+		sender.sendMessage(
+				ChatColor.translateAlternateColorCodes('&', config.getString(LanguageEnums.INCORRECTUSAGE.defaults)));
 
 		return true;
 
@@ -269,15 +280,46 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 	}
 
 	private void helpCommands(CommandSender sender) {
+
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aList Of All WatchList Commands:"));
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-				"  &7-&a&l/watchlist help &7Lists all Watch List commands"));
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-				"  &7-&a&l/watchlist add <player> <reason> &7Adds a player to the Watch List"));
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-				"  &7-&a&a&l/watchlist remove <player> &7Removes a player from the Watch List"));
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-				"  &7-&a&l/watchlist list <pageNumber> &7A list of the players who are in the WatchList"));
+
+		BaseComponent[] helpCMD = new ComponentBuilder(
+				ChatColor.translateAlternateColorCodes('&', "  &a-&a&l/watchlist &ahelp"))
+						.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								new Text(ChatColor.translateAlternateColorCodes('&', "&a&lCLICK TO COPY"))))
+						.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/watchlist help"))
+						.append(ChatColor.translateAlternateColorCodes('&', "&7 help Lists all Watch List commands!"))
+						.create();
+
+		BaseComponent[] addCMD = new ComponentBuilder(
+				ChatColor.translateAlternateColorCodes('&', "  &a-&a&l/watchlist&a add <player> <reason>"))
+						.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								new Text(ChatColor.translateAlternateColorCodes('&', "&a&lCLICK TO COPY"))))
+						.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/watchlist add"))
+						.append(ChatColor.translateAlternateColorCodes('&', "&7Adds a player to the Watch List!"))
+						.create();
+
+		BaseComponent[] removeCMD = new ComponentBuilder(
+				ChatColor.translateAlternateColorCodes('&', "  &a-&a&a&l/watchlist &aremove <player>"))
+						.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								new Text(ChatColor.translateAlternateColorCodes('&', "&a&lCLICK TO COPY"))))
+						.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/watchlist remove"))
+						.append(ChatColor.translateAlternateColorCodes('&', "&7Removes a player from the Watch List!"))
+						.create();
+
+		BaseComponent[] listCMD = new ComponentBuilder(
+				ChatColor.translateAlternateColorCodes('&', "  &a-&a&l/watchlist &alist <pageNumber>"))
+						.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+								new Text(ChatColor.translateAlternateColorCodes('&', "&a&lCLICK TO COPY"))))
+						.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/watchlist list"))
+						.append(ChatColor.translateAlternateColorCodes('&', "&7A list of the players who are in the WatchList!"))
+						.create();
+
+		sender.spigot().sendMessage(helpCMD);
+		sender.spigot().sendMessage(addCMD);
+		sender.spigot().sendMessage(removeCMD);
+		sender.spigot().sendMessage(listCMD);
+
 	}
 
 }
