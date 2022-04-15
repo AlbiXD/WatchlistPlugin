@@ -164,4 +164,24 @@ public class WatchlistSQL {
 		return playerList;
 	}
 
+	public String getReason(Player p) {
+		String reason = "";
+			try {
+				PreparedStatement ps;
+				ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM watchlist");
+				ResultSet result = ps.executeQuery();
+
+				while (result.next()) {
+					if (result.getString("playerUUID").equals(p.getUniqueId().toString())) {
+						return result.getString("REASON");
+					}
+				}
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}
+		return reason;
+	}
+
 }

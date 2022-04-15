@@ -1,8 +1,4 @@
 package listener;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -11,6 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import core.WatchlistPlugin;
+import data.ConfigEnums;
+import data.LanguageEnums;
 import net.md_5.bungee.api.ChatColor;
 
 public class PlayerJoining implements Listener {
@@ -20,16 +18,20 @@ public class PlayerJoining implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		e.getPlayer().setDisplayName("TEST");
-		
+
 		plugin.watchlist.playerChangedName(e.getPlayer());
 
 		if (plugin.watchlist.exists(e.getPlayer().getUniqueId())) {
-			String watchlistedPlayer = e.getPlayer().getName();
-
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				if (p.hasPermission("watchlist")) {
-					p.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&a&l" + watchlistedPlayer
-							+ " &ahas joined the server and is currently in the watchlist!"));
+					p.getPlayer()
+							.sendMessage(ChatColor.translateAlternateColorCodes('&', LanguageEnums.PLAYERJOIN.value)
+									.replace("%target%", e.getPlayer().getName())
+									.replace("%reason%", plugin.watchlist.getReason(e.getPlayer())));
+
+					if ((boolean) ConfigEnums.DISABLESOUND.value == false) {
+						p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2.0f, 1.0f);
+					}
 				}
 			}
 

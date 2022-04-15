@@ -2,7 +2,6 @@ package commands;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.bukkit.Bukkit;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -13,16 +12,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.util.ChatPaginator;
-
 import core.WatchlistPlugin;
+import data.ConfigEnums;
 import data.LanguageEnums;
-import listener.PlayerJoining;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class WatchlistCommand implements CommandExecutor, TabCompleter {
@@ -76,6 +72,13 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 
 				return true;
 			}
+
+			if (Bukkit.getOfflinePlayer(args[1]).getName().equals(sender.getName())) {
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+						config.getString(LanguageEnums.CANNOTADDSELF.defaults).replace("%target%", args[1])));
+				return true;
+			}
+
 			target = Bukkit.getOfflinePlayer(args[1]);
 
 			// Checks if player is in database
@@ -103,8 +106,10 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 				if (p.hasPermission("watchlist") && !p.equals((Player) sender)) {
 					p.sendMessage(ChatColor.translateAlternateColorCodes('&',
 							config.getString(LanguageEnums.STAFFADDEDMESSAGE.defaults).replace("%target%", args[1])
-									.replace("%staff%", sender.getName())));
-					p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2.0f, 1.0f);
+									.replace("%staff%", sender.getName()).replace("%reason%", reason.toUpperCase())));
+					if ((boolean) ConfigEnums.DISABLESOUND.value == false) {
+						p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 2.0f, 1.0f);
+					}
 				}
 			}
 			return true;
@@ -311,8 +316,8 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 				ChatColor.translateAlternateColorCodes('&', "  &a-&a&l/watchlist &alist <pageNumber>"))
 						.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 								new Text(ChatColor.translateAlternateColorCodes('&', "&a&lCLICK TO COPY"))))
-						.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/watchlist list"))
-						.append(ChatColor.translateAlternateColorCodes('&', "&7A list of the players who are in the WatchList!"))
+						.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/watchlist list")).append(ChatColor
+								.translateAlternateColorCodes('&', "&7A list of the players who are in the WatchList!"))
 						.create();
 
 		sender.spigot().sendMessage(helpCMD);
