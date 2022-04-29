@@ -1,4 +1,7 @@
 package listener;
+
+import java.sql.SQLException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -17,7 +20,6 @@ public class PlayerJoining implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
-		e.getPlayer().setDisplayName("TEST");
 
 		plugin.watchlist.playerChangedName(e.getPlayer());
 

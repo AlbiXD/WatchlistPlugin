@@ -22,7 +22,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class WatchlistCommand implements CommandExecutor, TabCompleter {
-	public static WatchlistPlugin plugin = WatchlistPlugin.getInstance();
+	public  WatchlistPlugin plugin = WatchlistPlugin.plugin;
 	private OfflinePlayer target;
 	FileConfiguration config = plugin.language.getConfig();
 

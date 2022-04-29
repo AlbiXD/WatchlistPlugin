@@ -5,12 +5,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+
 import commands.WatchlistCommand;
 import data.ConfigEnums;
 import data.ConfigManager;
 import data.LanguageEnums;
 import listener.PlayerJoining;
 import sql.SQLSetup;
+import sql.Task;
 import sql.WatchlistSQL;
 
 public class WatchlistPlugin extends JavaPlugin {
@@ -18,16 +22,21 @@ public class WatchlistPlugin extends JavaPlugin {
 	public static WatchlistPlugin plugin;
 	public SQLSetup SQL;
 	public WatchlistSQL watchlist;
-
 	private ConsoleCommandSender console = Bukkit.getConsoleSender();
 	public ConfigManager data;
 	public ConfigManager language;
+	BukkitRunnable Task;
 
 	@Override
 	public void onEnable() {
+		
+		Task = new Task(this);
+		
+		Task.runTaskTimer(this, 216000, 216000);
+		
+		
 		// Initiating the plugin instance to this class
 		plugin = this;
-
 		data = new ConfigManager(this, "config.yml");
 		language = new ConfigManager(this, "lang.yml");
 		
@@ -41,7 +50,6 @@ public class WatchlistPlugin extends JavaPlugin {
 		
 		for (LanguageEnums lan : LanguageEnums.values()) {
 			if (!language.getConfig().contains(lan.defaults)) {
-				System.out.println(lan);
 				language.getConfig().set(lan.defaults, lan.value);
 			}
 			language.saveConfig();
@@ -83,6 +91,7 @@ public class WatchlistPlugin extends JavaPlugin {
 		// disconnects from SQL database
 		SQL.disconnect();
 		console.sendMessage(ChatColor.translateAlternateColorCodes('&', "&4&lPlugin is disabled!"));
+		Task.cancel();
 
 	}
 

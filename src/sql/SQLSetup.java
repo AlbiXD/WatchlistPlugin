@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.craftbukkit.libs.org.apache.http.conn.ConnectionRequest;
 
 import core.WatchlistPlugin;
 
@@ -17,9 +18,16 @@ public class SQLSetup {
 	private String database = cfg.getString("SQL.database");
 	private String username = cfg.getString("SQL.username");
 	private String password = cfg.getString("SQL.password");
+	
+	
 
 	private Connection connection;
 
+	public SQLSetup() {
+	}
+	
+	
+	
 	public boolean isConnected() {
 		return (connection == null) ? false : true;
 	}
