@@ -6,8 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-
 import commands.WatchlistCommand;
 import data.ConfigEnums;
 import data.ConfigManager;
@@ -29,25 +27,23 @@ public class WatchlistPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		
+
 		Task = new Task(this);
-		
-		Task.runTaskTimer(this, 216000, 216000);
-		
-		
+
+		Task.runTaskTimer(this, 222000, 222000);
+
 		// Initiating the plugin instance to this class
 		plugin = this;
 		data = new ConfigManager(this, "config.yml");
 		language = new ConfigManager(this, "lang.yml");
-		
+
 		for (ConfigEnums cfg : ConfigEnums.values()) {
 			if (!data.getConfig().contains(cfg.defaults)) {
 				data.getConfig().set(cfg.defaults, cfg.value);
 			}
 			data.saveConfig();
 		}
-		
-		
+
 		for (LanguageEnums lan : LanguageEnums.values()) {
 			if (!language.getConfig().contains(lan.defaults)) {
 				language.getConfig().set(lan.defaults, lan.value);

@@ -1,7 +1,5 @@
 package sql;
 
-import java.sql.SQLException;
-
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -18,24 +16,8 @@ public class Task extends BukkitRunnable {
 
 	@Override
 	public void run() {
-
-		if (plugin.SQL.isConnected() == false) {
-			try {
-				plugin.SQL.connect();
-				Bukkit.getConsoleSender().sendMessage(
-						ChatColor.translateAlternateColorCodes('&', "&a&lCONSOLE: &a&lHello?, database are you still awake?"));
-				Bukkit.getConsoleSender()
-						.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a&lDATABASE: &a&lHi, I am still here!"));
-
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
+		plugin.watchlist.getRandom();
+		Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&aPinging to database"));
 	}
 
 }
