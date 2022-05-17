@@ -7,15 +7,16 @@ import java.io.InputStreamReader;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import main.DisguisePlugin;
+
+import core.WatchlistPlugin;
 
 public class ConfigManager {
-	private DisguisePlugin plugin;
+	private WatchlistPlugin plugin;
 	private FileConfiguration dataConfig = null;
 	private File configFile = null;
 	private String configName;
 
-	public ConfigManager(DisguisePlugin plugin, String configName) {
+	public ConfigManager(WatchlistPlugin plugin, String configName) {
 		this.plugin = plugin;
 		this.configName = configName;
 
