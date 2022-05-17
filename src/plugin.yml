@@ -1,8 +1,0 @@
-main: core.WatchlistPlugin
-name: WatchList
-version: 0.1
-description: A watchlist plugin
-commands:
-   watchlist:
-      usage: /<command>
-      permissions: watchlist

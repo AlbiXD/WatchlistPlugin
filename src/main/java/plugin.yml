@@ -1,0 +1,13 @@
+main: main.DisguisePlugin
+author: Albi
+description: Disguise Plugin
+name: DiguisePlugin
+version: 0.1
+depend: [ProtocolLib]
+commands:
+   disguise:
+      usage: /<command>
+   unmask:
+      usage: /<command>
+   glass:
+      usage: /<command>
