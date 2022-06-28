@@ -39,8 +39,8 @@ public class WatchlistCommand implements CommandExecutor, TabCompleter {
 		// Checks if the arguments are less than 0 if not then we continue to other
 		// subcommands
 		if (args.length == 0) {
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-					config.getString(LanguageEnums.INCORRECTUSAGE.defaults)));
+			
+			helpCommands(sender);
 
 			return true;
 		}
